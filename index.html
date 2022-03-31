@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eldorado Semana 2</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+
+    <script src="produto.js"></script>
+    <script src="produtoRepository.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <span class="nav-link">Home</span>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="cadastro.html">Cadastros</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+
+
+
+
+
+  <div class="row mt-2 ml-1 mr-1">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              <label>Cadastrar Produto</label>
+            </div>
+            <div class="card-body">
+              <div >
+                Código: <input type="text" class="form-control" id="inputCodigo" style="width: 30%"/>
+              </div>
+              <div >
+                Produto:<input type="text" class="form-control" id="inputDescricao" />
+              </div>
+              <div >
+                Quantidade: <input
+                  type="text"
+                  class="form-control"
+                  id="inputQty"
+                  style="width: 10%"
+                />
+              </div>
+              <button type="submit" id="btn-save" class="btn btn-primary float-right">
+                Salvar
+              </button>
+              <div
+                class="alert alert-info float-center d-none"
+                id="alert-save"
+                role="alert"
+              >
+                Produto cadastrado com sucesso!
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
+   
+
+
+    
+    <div class="row mt-2 ml-1 mr-1">
+      <div class="col-sm-12 col-md-12 col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            <button class="btn btn-outline-info float-right ml-2" id="search">
+              Buscar Produto
+            </button>
+            <input
+              type="text"
+              class="form-control float-right"
+              placeholder="Buscar Produto"
+              style="width: 50%"
+              id="search-produto"
+            />  
+            
+          </div>
+          <div class="card-body">
+            <table class="table table-striped">
+              <thead>
+                <th>Id</th>
+                <th>Código</th>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th></th>
+              </thead>
+              <tbody id="table-products"></tbody>
+            </table>
+          </div>
+          
+        </div>
+      </div>
+
+
+
+
+
+
+
+
+
+
+      <div class="col-sm-12 col-md-12 col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            <label>Detalhes do produto</label>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label for="inputCodigoEdit">Código</label>
+              <input
+                type="text"
+                class="form-control"
+                id="inputCodigoEdit"
+                style="width: 30%"
+              />
+            </div>
+            <div class="form-group">
+              <label for="inputDescricaoEdit">Descrição</label>
+              <input type="text" class="form-control" id="inputDescricaoEdit" />
+            </div>
+            <div class="form-group">
+              <label for="inputQtyEdit">Quantidade</label>
+              <input
+                type="text"
+                class="form-control"
+                id="inputQtyEdit"
+                style="width: 20%"
+              />
+            </div>
+            <button type="submit" id="btn-update" class="btn btn-success float-right">
+              Alterar
+            </button>
+            <div
+              class="alert alert-info float-center d-none"
+              id="alert-update"
+              role="alert"
+            >
+              Produto alterado com sucesso!
+            </div>
+            <input type="hidden" id="id-hidden" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+   <script>
+      document.getElementById("btn-save").addEventListener("click", function () {
+        const codigo = document.getElementById("inputCodigo").value;
+        const descricao = document.getElementById("inputDescricao").value;
+        const quantidade = document.getElementById("inputQty").value;
+        const produto = new Produto(codigo, descricao, quantidade);
+        const repository = new ProdutoRepository();
+        const result = repository.inserirProduto(produto);
+        if (result) {
+          const alert = document.getElementById("alert-save").classList;
+          alert.remove("d-none");
+          document.getElementById("inputCodigo").value = '';
+          document.getElementById("inputDescricao").value = '';
+          document.getElementById("inputQty").value = '';
+        }
+      });
+    
+    function listarProdutos() {
+      const produto = new ProdutoRepository();
+      const produtos = produto.listarProdutos();
+      var table = "";
+      for (var i = 0; i < produtos.length; i++) {
+        table +=
+          "<tr><td>" +
+          i +
+          "</td><td>" +
+          produtos[i]["codigo"] +
+          "</td><td>" +
+          produtos[i]["descricao"] +
+          "</td><td>" +
+          produtos[i]["quantidade"] +
+          "</td><td><button class='btn btn-info' onClick='updateProduct(" +
+          i +
+          ")'  data-id=" +
+          i +
+          " data-cod=" +
+          produtos[i]["codigo"] +
+          " data-des=" +
+          produtos[i]["descricao"] +
+          " data-qty=" +
+          produtos[i]["quantidade"] +
+          " id='update" +
+          i +
+          "'>editar</button> <button class='btn btn-danger' onClick='deleteProduct(" +
+          i +
+          ")' data-id=" +
+          i +
+          " id='delete" +
+          i +
+          "'>excluir</button></td></tr>";
+      }
+      document.getElementById("table-products").innerHTML = table;
+    }
+    listarProdutos();
+    document.getElementById("search").addEventListener("click", function () {
+      const val = document.getElementById("search-produto").value;
+      const produto = new ProdutoRepository();
+      const produtos = produto.buscarProduto(val);
+      if (produtos) {
+        const result = produtos.split("/");
+        var table = "";
+        table +=
+          "<tr><td>" +
+          result[0] +
+          "</td><td>" +
+          result[1] +
+          "</td><td>" +
+          result[2] +
+          "</td><td>" +
+          result[3] +
+          "</td><td><button class='btn btn-info' onClick='updateProduct(" +
+          result[0] +
+          ")'  data-id=" +
+          result[0] +
+          " data-cod=" +
+          result[1] +
+          " data-des=" +
+          result[2] +
+          " data-qty=" +
+          result[3] +
+          " id='update" +
+          result[0] +
+          "'>editar</button> <button class='btn btn-danger' onClick='deleteProduct(" +
+          result[0] +
+          ")' data-id=" +
+          result[0] +
+          " id='delete" +
+          result[0] +
+          "'>excluir</button></td></tr>";
+        document.getElementById("table-products").innerHTML = table;
+      } else {
+        listarProdutos();
+      }
+    });
+    function updateProduct(i) {
+      var update = document.getElementById("update" + i);
+      document.getElementById("inputCodigoEdit").value = update.dataset.cod;
+      document.getElementById("inputDescricaoEdit").value = update.dataset.des;
+      document.getElementById("inputQtyEdit").value = update.dataset.qty;
+      document.getElementById("id-hidden").value = i;
+    }
+
+    document
+      .getElementById("btn-update")
+      .addEventListener("click", function () {
+        const produto = new ProdutoRepository();
+        const produtos = produto.listarProdutos();
+        const pr = {
+          id: document.getElementById("id-hidden").value,
+          codigo: document.getElementById("inputCodigoEdit").value,
+          descricao: document.getElementById("inputDescricaoEdit").value,
+          quantidade: document.getElementById("inputQtyEdit").value,
+        };
+        const result = produto.alterarProduto(pr);
+        if (result) {
+          const alert = document.getElementById("alert-update").classList;
+          alert.remove("d-none");
+          document.getElementById("inputCodigoEdit").value = "";
+          document.getElementById("inputDescricaoEdit").value = "";
+          document.getElementById("inputQtyEdit").value = "";
+          listarProdutos();
+        }
+      });
+
+    function deleteProduct(i) {
+      const produto = new ProdutoRepository();
+      const produtos = produto.listarProdutos();
+      var del = document.getElementById("delete" + i);
+      alert(del.dataset.id)
+      const result = produto.deletarProduto(del.dataset.id);
+      if (result) {
+        alert("Produto deletado com sucesso!");
+        listarProdutos();
+      }
+    }
+    
+  </script>
+</html>
